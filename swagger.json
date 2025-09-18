@@ -5,8 +5,8 @@
     "description": "API service for OTP generation/verification, KYC verification, and email delivery.",
     "version": "0.1.0",
     "contact": {
-      "name": "Matthew Olanipekun",
-      "email": "caroline.mato1@gmail.com"
+      "name": "BetChief Technologies Limited",
+      "email": "betchiefhiring@gmail.com"
     }
   },
   "servers": [
