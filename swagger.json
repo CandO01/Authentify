@@ -1,0 +1,201 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "OTP, KYC, and Email API",
+    "description": "API service for OTP generation/verification, KYC verification, and email delivery.",
+    "version": "0.1.0",
+    "contact": {
+      "name": "Matthew Olanipekun",
+      "email": "caroline.mato1@gmail.com"
+    }
+  },
+  "servers": [
+    { "url": "http://localhost:5000/api/v1", "description": "Local server" },
+    { "url": "https://api.betchief.com/v1", "description": "Production server" },
+    { "url": "https://sandbox.betchief.com/v1", "description": "Sandbox server" }
+  ],
+  "security": [{ "ApiKeyAuth": [] }],
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-KEY"
+      }
+    },
+    "schemas": {
+      "OTPGenerateResponse": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "success" },
+          "otp_id": { "type": "string", "example": "12345" },
+          "expires_in": { "type": "integer", "example": 300 }
+        }
+      },
+      "OTPVerifyResponse": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "verified" },
+          "message": { "type": "string", "example": "OTP verified successfully" }
+        }
+      },
+      "KYCResponse": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "verified" },
+          "user_id": { "type": "string", "example": "7890" },
+          "verification_level": { "type": "string", "example": "basic" }
+        }
+      },
+      "EmailResponse": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "sent" },
+          "message_id": { "type": "string", "example": "abc123" }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/otp/generate": {
+      "post": {
+        "summary": "Generate OTP",
+        "description": "Generate a new OTP and send via SMS, email, or WhatsApp.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "recipient": { "type": "string", "example": "+2348012345678" },
+                  "channel": { "type": "string", "enum": ["sms", "email", "whatsapp"], "example": "sms" },
+                  "length": { "type": "integer", "example": 6 },
+                  "expiry": { "type": "integer", "example": 300 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OTP generated",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/OTPGenerateResponse" } }
+            }
+          }
+        }
+      }
+    },
+    "/otp/verify": {
+      "post": {
+        "summary": "Verify OTP",
+        "description": "Verify a submitted OTP against the generated one.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "otp_id": { "type": "string", "example": "12345" },
+                  "otp_code": { "type": "string", "example": "492837" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OTP verified",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/OTPVerifyResponse" } }
+            }
+          }
+        }
+      }
+    },
+    "/kyc/verify": {
+      "post": {
+        "summary": "Verify user identity",
+        "description": "Submit user data for KYC verification.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string", "example": "John Doe" },
+                  "dob": { "type": "string", "format": "date", "example": "1990-01-01" },
+                  "id_type": { "type": "string", "example": "NIN" },
+                  "id_number": { "type": "string", "example": "1234567890" },
+                  "document_upload": { "type": "string", "format": "uri", "example": "https://example.com/document.pdf" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "KYC verification status",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/KYCResponse" } }
+            }
+          }
+        }
+      }
+    },
+    "/kyc/status/{id}": {
+      "get": {
+        "summary": "Check KYC status",
+        "description": "Retrieve the KYC verification status for a user.",
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" }, "description": "User ID" }
+        ],
+        "responses": {
+          "200": {
+            "description": "KYC status",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/KYCResponse" } }
+            }
+          }
+        }
+      }
+    },
+    "/email/send": {
+      "post": {
+        "summary": "Send email",
+        "description": "Send a transactional or notification email.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "to": { "type": "string", "example": "customer@example.com" },
+                  "subject": { "type": "string", "example": "Welcome to our service" },
+                  "body": { "type": "string", "example": "Thank you for registering!" },
+                  "template_id": { "type": "string", "example": "welcome_template" },
+                  "attachments": {
+                    "type": "array",
+                    "items": { "type": "string", "format": "uri", "example": "https://example.com/file.pdf" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email sent",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/EmailResponse" } }
+            }
+          }
+        }
+      }
+    }
+  }
+}
