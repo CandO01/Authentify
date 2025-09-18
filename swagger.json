@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "OTP, KYC, and Email API",
+    "title": "AUTHENTIFY",
     "description": "API service for OTP generation/verification, KYC verification, and email delivery.",
     "version": "0.1.0",
     "contact": {
