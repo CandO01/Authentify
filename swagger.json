@@ -11,8 +11,8 @@
   },
   "servers": [
     { "url": "http://localhost:5000/api/v1", "description": "Local server" },
-    { "url": "https://api.betchief.com/v1", "description": "Production server" },
-    { "url": "https://sandbox.betchief.com/v1", "description": "Sandbox server" }
+    { "url": "https://api.betchief.com/api/v1", "description": "Production server" },
+    { "url": "https://sandbox.betchief.com/api/v1", "description": "Sandbox server" }
   ],
   "security": [{ "ApiKeyAuth": [] }],
   "components": {
